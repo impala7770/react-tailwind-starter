@@ -1,5 +1,14 @@
 import React from 'react';
-import { Bot, Zap, ShieldCheck, BarChart3, ChevronRight, CheckCircle2, Wallet, Activity } from 'lucide-react';
+
+// Заглушки вместо библиотеки иконок (чтобы не ломался сайт)
+const Bot = ({ className }) => <span className={className} style={{ fontSize: '1.2em' }}>🤖</span>;
+const Zap = ({ className }) => <span className={className} style={{ fontSize: '1.2em' }}>⚡</span>;
+const ShieldCheck = ({ className }) => <span className={className} style={{ fontSize: '2.5em', display: 'block' }}>🛡️</span>;
+const BarChart3 = ({ className }) => <span className={className} style={{ fontSize: '2.5em', display: 'block' }}>📊</span>;
+const ChevronRight = ({ className }) => <span className={className} style={{ fontSize: '1.2em' }}>➡️</span>;
+const CheckCircle2 = ({ className }) => <span className={className} style={{ fontSize: '1.2em' }}>✅</span>;
+const Wallet = ({ className }) => <span className={className} style={{ fontSize: '2.5em', display: 'block' }}>💳</span>;
+const Activity = ({ className }) => <span className={className} style={{ fontSize: '1.2em' }}>📈</span>;
 
 const LandingPage = () => {
   return (
@@ -9,7 +18,7 @@ const LandingPage = () => {
       <nav className="fixed w-full z-50 border-b border-white/5 bg-slate-950/50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-            <Bot className="w-6 h-6 text-purple-500" />
+            <Bot className="text-purple-500" />
             <span>PolyAlgo <span className="text-purple-500">Trader</span></span>
           </div>
           <div className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
@@ -29,7 +38,7 @@ const LandingPage = () => {
         
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-medium mb-8">
-            <Activity className="w-4 h-4" />
+            <Activity className="text-purple-400" />
             <span>Движок v2.0: Интегрирован 6-Factor Binance Validator</span>
           </div>
           
@@ -47,7 +56,7 @@ const LandingPage = () => {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a href="https://t.me/polymarket3333bot" target="_blank" rel="noopener noreferrer" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-[0_0_30px_-5px_#9333ea]">
               Запустить в Telegram
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight />
             </a>
             <a href="#stats" className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
               Смотреть статистику
@@ -84,7 +93,7 @@ const LandingPage = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-purple-500/30 transition-colors">
-            <ShieldCheck className="w-10 h-10 text-purple-400 mb-6" />
+            <ShieldCheck className="mb-4" />
             <h3 className="text-2xl font-bold mb-4">6-Factor Binance Validator</h3>
             <p className="text-slate-400 leading-relaxed">
               Мы не верим Polymarket на слово. Каждая аномалия проходит жесткую проверку через API Binance Futures. Бот анализирует CVD (агрессию), OBI (баланс стакана), микро-импульсы цены, плотности магнитных лимиток, моментум Открытого Интереса (OI RSI) и сквизы толпы (Long/Short Ratio).
@@ -92,7 +101,7 @@ const LandingPage = () => {
           </div>
           
           <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-cyan-500/30 transition-colors">
-            <BarChart3 className="w-10 h-10 text-cyan-400 mb-6" />
+            <BarChart3 className="mb-4" />
             <h3 className="text-xl font-bold mb-3">Стаканный радар</h3>
             <p className="text-slate-400 text-sm">
               Блокировка сделок, если на пути цены стоит бетонная "плита" из сотен биткоинов в Heatmap.
@@ -100,7 +109,7 @@ const LandingPage = () => {
           </div>
 
           <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-green-500/30 transition-colors">
-            <Wallet className="w-10 h-10 text-green-400 mb-6" />
+            <Wallet className="mb-4" />
             <h3 className="text-xl font-bold mb-3">Web3 Auto-Trade</h3>
             <p className="text-slate-400 text-sm">
               Прямое подключение к сети Polygon. Бот сам покупает акции через смарт-контракты за доли секунды.
@@ -126,10 +135,10 @@ const LandingPage = () => {
               <h3 className="text-xl font-medium text-slate-300 mb-2">Тариф PRO</h3>
               <div className="text-4xl font-bold mb-6">50 USDT<span className="text-lg text-slate-500 font-normal"> /мес</span></div>
               <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3 text-slate-300"><CheckCircle2 className="w-5 h-5 text-purple-500" /> Открытые точки входа</li>
-                <li className="flex items-center gap-3 text-slate-300"><CheckCircle2 className="w-5 h-5 text-purple-500" /> 6-факторная валидация</li>
-                <li className="flex items-center gap-3 text-slate-300"><CheckCircle2 className="w-5 h-5 text-purple-500" /> Прямые ссылки на рынки</li>
-                <li className="flex items-center gap-3 text-slate-500"><Zap className="w-5 h-5" /> <s>Автоторговля Web3</s></li>
+                <li className="flex items-center gap-3 text-slate-300"><CheckCircle2 className="text-purple-500" /> Открытые точки входа</li>
+                <li className="flex items-center gap-3 text-slate-300"><CheckCircle2 className="text-purple-500" /> 6-факторная валидация</li>
+                <li className="flex items-center gap-3 text-slate-300"><CheckCircle2 className="text-purple-500" /> Прямые ссылки на рынки</li>
+                <li className="flex items-center gap-3 text-slate-500"><Zap /> <s>Автоторговля Web3</s></li>
               </ul>
               <a href="https://t.me/polymarket3333bot" target="_blank" rel="noopener noreferrer" className="w-full bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-bold transition-colors flex justify-center">
                 Выбрать PRO
@@ -141,10 +150,10 @@ const LandingPage = () => {
               <h3 className="text-xl font-medium text-purple-300 mb-2">Тариф ULTRA</h3>
               <div className="text-4xl font-bold mb-6">150 USDT<span className="text-lg text-slate-500 font-normal"> /мес</span></div>
               <ul className="space-y-4 mb-8">
-                <li className="flex items-center gap-3 text-slate-100"><CheckCircle2 className="w-5 h-5 text-purple-400" /> Всё из тарифа PRO</li>
-                <li className="flex items-center gap-3 text-slate-100"><CheckCircle2 className="w-5 h-5 text-purple-400" /> <b>1-Second Web3 Auto-Trade</b></li>
-                <li className="flex items-center gap-3 text-slate-100"><CheckCircle2 className="w-5 h-5 text-purple-400" /> Индивидуальный Polygon кошелек</li>
-                <li className="flex items-center gap-3 text-slate-100"><CheckCircle2 className="w-5 h-5 text-purple-400" /> Kelly Bet Sizing (риск-менеджмент)</li>
+                <li className="flex items-center gap-3 text-slate-100"><CheckCircle2 className="text-purple-400" /> Всё из тарифа PRO</li>
+                <li className="flex items-center gap-3 text-slate-100"><CheckCircle2 className="text-purple-400" /> <b>1-Second Web3 Auto-Trade</b></li>
+                <li className="flex items-center gap-3 text-slate-100"><CheckCircle2 className="text-purple-400" /> Индивидуальный Polygon кошелек</li>
+                <li className="flex items-center gap-3 text-slate-100"><CheckCircle2 className="text-purple-400" /> Kelly Bet Sizing (риск-менеджмент)</li>
               </ul>
               <a href="https://t.me/polymarket3333bot" target="_blank" rel="noopener noreferrer" className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold transition-colors shadow-lg shadow-purple-500/25 flex justify-center">
                 Выбрать ULTRA
