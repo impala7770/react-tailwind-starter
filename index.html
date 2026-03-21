@@ -1,158 +1,329 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PolyAlgo Trader</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolyAlgo Trader | Институциональный анализ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --bg-card: #18181b;
+            --text-main: #fafafa;
+            --text-muted: #a1a1aa;
+            --accent: #10b981; /* Neon green */
+            --accent-glow: rgba(16, 185, 129, 0.2);
+            --border: #27272a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Текст терминала/кода */
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Навигация */
+        header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+        .logo span { color: var(--accent); }
+
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover { border-color: var(--text-muted); }
+
+        /* Hero секция */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+            background: radial-gradient(circle at 50% 0%, var(--accent-glow) 0%, transparent 50%);
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .disclaimer-micro {
+            font-size: 0.85rem;
+            color: #71717a;
+        }
+
+        /* Секции общие */
+        section { padding: 80px 0; }
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+
+        /* Карточки 5-факторной валидации */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover { transform: translateY(-5px); border-color: var(--text-muted); }
+        .card-icon { font-size: 2rem; margin-bottom: 16px; }
+        .card h3 { margin-bottom: 12px; font-size: 1.25rem; }
+        .card p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Терминал-блок для философии */
+        .terminal {
+            background-color: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-top: 24px;
+            border-left: 4px solid var(--accent);
+        }
+        .terminal p { color: var(--accent); margin: 0; }
+
+        /* Тарифы */
+        .pricing-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+        }
+        .pricing-card.pro { border-color: var(--accent); position: relative; }
+        .pricing-card.pro::before {
+            content: "POPULAR";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #000;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            border-radius: 12px;
+        }
+        .price { font-size: 3rem; font-weight: 800; margin: 24px 0; }
+        .pricing-card ul {
+            list-style: none;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+        .pricing-card ul li {
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .cta-group { flex-direction: column; }
+        }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-50 font-sans selection:bg-purple-500/30">
-  
-  <nav class="fixed w-full z-50 border-b border-white/5 bg-slate-950/50 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-2 font-bold text-xl tracking-tight">
-        <span style="font-size: 1.2em;">🤖</span>
-        <span>PolyAlgo <span class="text-purple-500">Trader</span></span>
-      </div>
-      <div class="hidden md:flex gap-8 text-sm font-medium text-slate-400">
-        <a href="#features" class="hover:text-white transition-colors">Технологии</a>
-        <a href="#stats" class="hover:text-white transition-colors">Статистика</a>
-        <a href="#pricing" class="hover:text-white transition-colors">Тарифы</a>
-      </div>
-      <a href="https://t.me/polymarket3333bot" target="_blank" rel="noopener noreferrer" class="bg-white/10 hover:bg-white/20 text-white px-5 py-2 rounded-full text-sm font-medium transition-all">
-        Войти
-      </a>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">PolyAlgo<span>.</span></div>
+            <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn btn-secondary">Войти в Hub</a>
+        </header>
+
+        <section class="hero">
+            <h1>Оцифровываем намерения рынка.</h1>
+            <p>Аналитический алгоритм, объединяющий ставки толпы на Polymarket с реальным потоком ордеров (CVD & OI) на Binance Futures. Мы не предсказываем будущее. Мы показываем, куда вливаются умные деньги.</p>
+            <div class="cta-group">
+                <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn btn-primary">🤖 Запустить бота (Free)</a>
+            </div>
+            <p class="disclaimer-micro">⚠️ Математический контекст, а не финансовая рекомендация.</p>
+        </section>
+
+        <section>
+            <h2 class="section-title">Сигнал — это повод открыть график, а не сделка.</h2>
+            <div class="grid" style="grid-template-columns: 1fr;">
+                <div class="card">
+                    <p>Рынок переполнен каналами, которые рисуют стрелочки и обещают 100% винрейт. Мы в это не верим. PolyAlgo создавался как внутренний Research Node для фильтрации рыночного шума на 15-минутных таймфреймах.</p>
+                    <div class="terminal mono">
+                        <p>> Внимание. На Polymarket толпа ставит на падение, но алгоритм фиксирует аномальный приток агрессивных рыночных покупок (CVD) на Binance, подкрепленный ростом Открытого Интереса (OI). Вероятен сквиз (Exodus).</p>
+                    </div>
+                    <p style="margin-top: 24px;">Решение о входе в сделку и риск-менеджмент остаются за вами. Мы даем контекст.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">5-Факторная валидация</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon">⚡️</div>
+                    <h3>Polymarket Anomaly</h3>
+                    <p>Поиск расхождений между вероятностями на Polymarket и реальным графиком.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>CVD (Volume Delta)</h3>
+                    <p>Анализ последних 500 сделок на Binance. Отделяем пассивные лимиты от агрессивных ударов по стакану.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔥</div>
+                    <h3>Open Interest</h3>
+                    <p>Отличаем истинное движение (заход новых денег) от фейкового сквиза (закрытие позиций толпы).</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📏</div>
+                    <h3>ATR Filter</h3>
+                    <p>Защита от боковика. Игнорируем шум, если цена не вышла за пределы среднего истинного диапазона.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚖️</div>
+                    <h3>Dynamic Score</h3>
+                    <p>Каждое событие получает оценку силы паттерна (Strength Score от 50 до 99%).</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Прозрачная статистика</h2>
+            <div class="grid" style="grid-template-columns: 1fr;">
+                <div class="card" style="text-align: center;">
+                    <p style="font-size: 1.1rem; margin-bottom: 24px;">Мы не скрываем минусы. База данных сделок открыта прямо в Telegram-боте.</p>
+                    <p><strong>Global Winrate:</strong> Общая успешность за 24 часа, 7 дней и всё время.<br>
+                    <strong>History:</strong> Журнал всех циклов с указанием изначального Score и исхода.</p>
+                    <p style="margin-top: 24px; color: var(--accent);">Честные 70-75% винрейта на дистанции вызывают больше уважения, чем нарисованные 99%.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Тарифы</h2>
+            <div class="grid">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price mono">0 <span style="font-size: 1.2rem; color: var(--text-muted);">USDT</span></div>
+                    <ul>
+                        <li>✔️ Доступ к глобальной статистике бота</li>
+                        <li>✔️ Уведомления о появлении аномалий</li>
+                        <li>✔️ Участие в партнерской программе</li>
+                        <li style="color: #ef4444;">❌ Скрыты точная точка входа и направление</li>
+                    </ul>
+                    <a href="https://t.me/polymarket3333bot?start=ref_930769410" class="btn btn-secondary" style="width: 100%;">Начать бесплатно</a>
+                </div>
+                <div class="pricing-card pro">
+                    <h3>PRO Интрадей</h3>
+                    <div class="price mono">50 <span style="font-size: 1.2rem; color: var(--text-muted);">USDT/мес</span></div>
+                    <ul>
+                        <li>💎 Мгновенные сигналы с направлением (LONG/SHORT)</li>
+                        <li>💎 Данные по CVD и Открытому Интересу в Real-Time</li>
+                        <li>💎 Прямые ссылки для входа в 1 клик</li>
+                        <li>💎 Кастомизация: выбор монет для мониторинга</li>
+                    </ul>
+                    <a href="https://t.me/polymarket3333bot?start=ref_930769410" class="btn btn-primary" style="width: 100%;">Получить доступ</a>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="card" style="text-align: center; border-color: var(--accent);">
+                <h2 style="margin-bottom: 16px;">Партнерская программа (RevShare)</h2>
+                <p style="margin-bottom: 24px;">У нас нет отдела продаж, мы растем за счет комьюнити. Скопируйте ссылку в боте и приглашайте друзей.</p>
+                <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: 8px;">💸</div>
+                        <strong>Вам: 20% (10 USDT)</strong><br><span style="color: var(--text-muted); font-size: 0.9rem;">с каждой оплаты реферала</span>
+                    </div>
+                    <div>
+                        <div style="font-size: 2rem; margin-bottom: 8px;">🎁</div>
+                        <strong>Другу: +7 дней PRO</strong><br><span style="color: var(--text-muted); font-size: 0.9rem;">бесплатно при покупке</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>Risk Warning:</strong> Торговля криптовалютами и деривативами сопряжена с высоким уровнем риска. Алгоритмические расчеты базируются на исторических данных и не гарантируют будущей прибыли. Проект PolyAlgo не несет ответственности за ваши торговые решения. Используйте строгий риск-менеджмент.</p>
+            <p style="margin-top: 16px;">&copy; 2026 PolyAlgo. Все права защищены.</p>
+        </footer>
     </div>
-  </nav>
 
-  <section class="pt-32 pb-20 px-6 relative overflow-hidden">
-    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
-    
-    <div class="max-w-7xl mx-auto text-center relative z-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-medium mb-8">
-        <span>📈</span>
-        <span>Движок v2.0: Интегрирован 6-Factor Binance Validator</span>
-      </div>
-      
-      <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
-        Переиграй толпу на <br class="hidden md:block" />
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">
-          Polymarket
-        </span>
-      </h1>
-      
-      <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-        Институциональный алгоритм. Ищет инсайдерские аномалии в стакане Polymarket и подтверждает их реальными объемами Binance (CVD, OI, Heatmap, Long/Short Ratio).
-      </p>
-      
-      <div class="flex flex-col sm:flex-row justify-center gap-4">
-        <a href="https://t.me/polymarket3333bot" target="_blank" rel="noopener noreferrer" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-[0_0_30px_-5px_#9333ea]">
-          Запустить в Telegram <span>➡️</span>
-        </a>
-        <a href="#stats" class="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
-          Смотреть статистику
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section id="stats" class="py-12 border-y border-white/5 bg-white/[0.02]">
-    <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-      <div>
-        <div class="text-4xl font-black text-white mb-2">76.2%</div>
-        <div class="text-sm text-slate-400 font-medium">Глобальный Винрейт</div>
-      </div>
-      <div>
-        <div class="text-4xl font-black text-white mb-2">6</div>
-        <div class="text-sm text-slate-400 font-medium">Факторов Валидации</div>
-      </div>
-      <div>
-        <div class="text-4xl font-black text-white mb-2">&lt;1s</div>
-        <div class="text-sm text-slate-400 font-medium">Web3 Исполнение</div>
-      </div>
-      <div>
-        <div class="text-4xl font-black text-white mb-2">480+</div>
-        <div class="text-sm text-slate-400 font-medium">Успешных сделок</div>
-      </div>
-    </div>
-  </section>
-
-  <section id="features" class="py-24 px-6 max-w-7xl mx-auto">
-    <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Под капотом — <span class="text-purple-400">чистая математика</span></h2>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="md:col-span-2 bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-purple-500/30 transition-colors">
-        <div style="font-size: 2.5em;" class="mb-4">🛡️</div>
-        <h3 class="text-2xl font-bold mb-4">6-Factor Binance Validator</h3>
-        <p class="text-slate-400 leading-relaxed">
-          Мы не верим Polymarket на слово. Каждая аномалия проходит жесткую проверку через API Binance Futures. Бот анализирует CVD (агрессию), OBI (баланс стакана), микро-импульсы цены, плотности магнитных лимиток, моментум Открытого Интереса (OI RSI) и сквизы толпы (Long/Short Ratio).
-        </p>
-      </div>
-      
-      <div class="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-cyan-500/30 transition-colors">
-        <div style="font-size: 2.5em;" class="mb-4">📊</div>
-        <h3 class="text-xl font-bold mb-3">Стаканный радар</h3>
-        <p class="text-slate-400 text-sm">
-          Блокировка сделок, если на пути цены стоит бетонная "плита" из сотен биткоинов в Heatmap.
-        </p>
-      </div>
-
-      <div class="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-green-500/30 transition-colors">
-        <div style="font-size: 2.5em;" class="mb-4">💳</div>
-        <h3 class="text-xl font-bold mb-3">Web3 Auto-Trade</h3>
-        <p class="text-slate-400 text-sm">
-          Прямое подключение к сети Polygon. Бот сам покупает акции через смарт-контракты за доли секунды.
-        </p>
-      </div>
-
-      <div class="md:col-span-2 bg-slate-900 border border-white/5 rounded-3xl p-8 flex flex-col justify-center">
-        <h3 class="text-2xl font-bold mb-4">Анти-спам архитектура</h3>
-        <p class="text-slate-400 mb-6">
-          Интегрированная SQLite база данных гарантирует, что вы получите строго один сигнал на один 15-минутный раунд. Никакого визуального мусора.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section id="pricing" class="py-24 px-6 bg-slate-900/50 border-t border-white/5">
-    <div class="max-w-7xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Выберите свой арсенал</h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:max-w-4xl mx-auto gap-8">
-        <div class="bg-slate-950 border border-white/10 rounded-3xl p-8">
-          <h3 class="text-xl font-medium text-slate-300 mb-2">Тариф PRO</h3>
-          <div class="text-4xl font-bold mb-6">50 USDT<span class="text-lg text-slate-500 font-normal"> /мес</span></div>
-          <ul class="space-y-4 mb-8">
-            <li class="flex items-center gap-3 text-slate-300"><span class="text-purple-500">✅</span> Открытые точки входа</li>
-            <li class="flex items-center gap-3 text-slate-300"><span class="text-purple-500">✅</span> 6-факторная валидация</li>
-            <li class="flex items-center gap-3 text-slate-300"><span class="text-purple-500">✅</span> Прямые ссылки на рынки</li>
-            <li class="flex items-center gap-3 text-slate-500"><span>⚡</span> <s>Автоторговля Web3</s></li>
-          </ul>
-          <a href="https://t.me/polymarket3333bot" target="_blank" rel="noopener noreferrer" class="w-full bg-white/5 hover:bg-white/10 text-white py-3 rounded-xl font-bold transition-colors flex justify-center">
-            Выбрать PRO
-          </a>
-        </div>
-
-        <div class="bg-gradient-to-b from-purple-900/40 to-slate-950 border border-purple-500/30 rounded-3xl p-8 relative overflow-hidden">
-          <div class="absolute top-0 right-0 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">РЕКОМЕНДУЕМ</div>
-          <h3 class="text-xl font-medium text-purple-300 mb-2">Тариф ULTRA</h3>
-          <div class="text-4xl font-bold mb-6">150 USDT<span class="text-lg text-slate-500 font-normal"> /мес</span></div>
-          <ul class="space-y-4 mb-8">
-            <li class="flex items-center gap-3 text-slate-100"><span class="text-purple-400">✅</span> Всё из тарифа PRO</li>
-            <li class="flex items-center gap-3 text-slate-100"><span class="text-purple-400">✅</span> <b>1-Second Web3 Auto-Trade</b></li>
-            <li class="flex items-center gap-3 text-slate-100"><span class="text-purple-400">✅</span> Индивидуальный Polygon кошелек</li>
-            <li class="flex items-center gap-3 text-slate-100"><span class="text-purple-400">✅</span> Kelly Bet Sizing (риск-менеджмент)</li>
-          </ul>
-          <a href="https://t.me/polymarket3333bot" target="_blank" rel="noopener noreferrer" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold transition-colors shadow-lg shadow-purple-500/25 flex justify-center">
-            Выбрать ULTRA
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="py-8 text-center text-slate-500 border-t border-white/5 text-sm">
-    <p>© 2026 PolyAlgo Trader. Торговля высокорискованными активами может привести к убыткам.</p>
-  </footer>
 </body>
 </html>
