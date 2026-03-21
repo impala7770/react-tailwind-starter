@@ -119,13 +119,28 @@
             text-align: center;
         }
 
-        /* Карточки 5-факторной валидации */
+        /* Стандартная сетка Grid (для истории и тарифов) */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
         }
 
+        /* 🔥 Новые стили для центрирования 5 блоков (Вариант Flexbox) 🔥 */
+        .validation-flex {
+            display: flex;         /* Используем Flexbox */
+            flex-wrap: wrap;       /* Разрешаем перенос блоков */
+            gap: 24px;              /* Стандартный отступ */
+            justify-content: center; /* Центрируем блоки в рядах, которые не заполнены полностью */
+        }
+
+        /* Обязательно ограничиваем ширину карточек в Flex-режиме, чтобы они не растягивались безумно */
+        .validation-flex .card {
+            flex: 1 1 300px;  /* Базовая ширина карточки как в Grid (300px) */
+            max-width: 360px; /* Максимальная ширина, чтобы 2 нижних блока не выглядели огромными на ПК */
+        }
+
+        /* Стили карточек */
         .card {
             background-color: var(--bg-card);
             border: 1px solid var(--border);
@@ -206,7 +221,7 @@
     <div class="container">
         <header>
             <div class="logo">PolyAlgo<span>.</span></div>
-            <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn btn-secondary">Открыть PolyAlgo Bot</a>
+            <a href="https://t.me/ТВОЙ_БОТ" target="_blank" class="btn btn-secondary">Открыть PolyAlgo Bot</a>
         </header>
 
         <section class="hero">
@@ -233,7 +248,7 @@
 
         <section>
             <h2 class="section-title">5-Факторная валидация</h2>
-            <div class="grid">
+            <div class="validation-flex">
                 <div class="card">
                     <div class="card-icon">⚡️</div>
                     <h3>Polymarket Anomaly</h3>
