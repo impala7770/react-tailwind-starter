@@ -1,344 +1,1035 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PolyAlgo Trader | Институциональный анализ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-dark: #09090b;
-            --bg-card: #18181b;
-            --text-main: #fafafa;
-            --text-muted: #a1a1aa;
-            --accent: #10b981; /* Neon green */
-            --accent-glow: rgba(16, 185, 129, 0.2);
-            --border: #27272a;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PolyAlgo Trader | Институциональный анализ Polymarket</title>
+<meta name="description" content="Алгоритм находит расхождения между ставками толпы на Polymarket и реальным потоком ордеров на Binance Futures. 72.9% винрейт. 3 дня PRO бесплатно.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #070709;
+  --bg-card:   #0e0e12;
+  --bg-card2:  #131318;
+  --accent:    #00ff87;
+  --accent2:   #00c4ff;
+  --glow:      rgba(0,255,135,0.15);
+  --glow2:     rgba(0,196,255,0.12);
+  --text:      #f0f0f4;
+  --muted:     #6b6b7a;
+  --border:    #1e1e26;
+  --border2:   #2a2a38;
+  --red:       #ff4560;
+}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+html { scroll-behavior: smooth; }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
 
-        /* Текст терминала/кода */
-        .mono { font-family: 'JetBrains Mono', monospace; }
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
 
-        /* Навигация */
-        header {
-            padding: 24px 0;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
-        .logo span { color: var(--accent); }
+.container { max-width: 1080px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 
-        /* Кнопки */
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .btn-primary {
-            background-color: var(--accent);
-            color: #000;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-        
-        .btn-primary:hover {
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
-            transform: translateY(-2px);
-        }
+/* ── FONTS ── */
+.syne { font-family: 'Syne', sans-serif; }
+.mono { font-family: 'DM Mono', monospace; }
 
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border);
-        }
-        
-        .btn-secondary:hover { border-color: var(--text-muted); }
+/* ── HEADER ── */
+header {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky; top: 0;
+  background: rgba(7,7,9,0.85);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
 
-        /* Hero секция */
-        .hero {
-            padding: 100px 0;
-            text-align: center;
-            background: radial-gradient(circle at 50% 0%, var(--accent-glow) 0%, transparent 50%);
-        }
-        
-        .hero h1 {
-            font-size: 3.5rem;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            letter-spacing: -1px;
-        }
-        
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            max-width: 700px;
-            margin: 0 auto 40px;
-        }
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--accent); }
 
-        .cta-group {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
+.header-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  padding: 9px 18px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.header-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-        .disclaimer-micro {
-            font-size: 0.85rem;
-            color: #71717a;
-        }
+/* ── HERO ── */
+.hero {
+  padding: 110px 0 90px;
+  position: relative;
+  overflow: hidden;
+}
 
-        /* Секции общие */
-        section { padding: 80px 0; }
-        .section-title {
-            font-size: 2.5rem;
-            margin-bottom: 48px;
-            text-align: center;
-        }
+.hero-glow {
+  position: absolute;
+  top: -100px; left: 50%;
+  transform: translateX(-50%);
+  width: 700px; height: 500px;
+  background: radial-gradient(ellipse, var(--glow) 0%, transparent 70%);
+  pointer-events: none;
+}
 
-        /* Стандартная сетка Grid (для истории и тарифов) */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,255,135,0.08);
+  border: 1px solid rgba(0,255,135,0.2);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 32px;
+  letter-spacing: 0.05em;
+}
+.badge-dot {
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
 
-        /* 🔥 Новые стили для центрирования 5 блоков (Вариант Flexbox) 🔥 */
-        .validation-flex {
-            display: flex;         /* Используем Flexbox */
-            flex-wrap: wrap;       /* Разрешаем перенос блоков */
-            gap: 24px;              /* Стандартный отступ */
-            justify-content: center; /* Центрируем блоки в рядах, которые не заполнены полностью */
-        }
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  margin-bottom: 24px;
+}
 
-        /* Обязательно ограничиваем ширину карточек в Flex-режиме, чтобы они не растягивались безумно */
-        .validation-flex .card {
-            flex: 1 1 300px;  /* Базовая ширина карточки как в Grid (300px) */
-            max-width: 360px; /* Максимальная ширина, чтобы 2 нижних блока не выглядели огромными на ПК */
-        }
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-        /* Стили карточек */
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 32px;
-            transition: transform 0.3s ease;
-        }
-        
-        .card:hover { transform: translateY(-5px); border-color: var(--text-muted); }
-        .card-icon { font-size: 2rem; margin-bottom: 16px; }
-        .card h3 { margin-bottom: 12px; font-size: 1.25rem; }
-        .card p { color: var(--text-muted); font-size: 0.95rem; }
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 560px;
+  margin-bottom: 44px;
+  line-height: 1.7;
+}
 
-        /* Терминал-блок для философии */
-        .terminal {
-            background-color: #000;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
-            margin-top: 24px;
-            border-left: 4px solid var(--accent);
-        }
-        .terminal p { color: var(--accent); margin: 0; }
+.cta-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
 
-        /* Тарифы */
-        .pricing-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-        }
-        .pricing-card.pro { border-color: var(--accent); position: relative; }
-        .pricing-card.pro::before {
-            content: "POPULAR";
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent);
-            color: #000;
-            padding: 4px 12px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            border-radius: 12px;
-        }
-        .price { font-size: 3rem; font-weight: 800; margin: 24px 0; }
-        .pricing-card ul {
-            list-style: none;
-            margin-bottom: 32px;
-            text-align: left;
-        }
-        .pricing-card ul li {
-            margin-bottom: 12px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+.btn-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent);
+  color: #000;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s;
+  box-shadow: 0 0 30px var(--glow);
+  letter-spacing: -0.2px;
+}
+.btn-main:hover {
+  box-shadow: 0 0 50px rgba(0,255,135,0.35);
+  transform: translateY(-2px);
+}
 
-        /* Footer */
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 40px 0;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            text-align: center;
-        }
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  font-size: 14px;
+  padding: 13px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
 
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .cta-group { flex-direction: column; }
-        }
-    </style>
+.disclaimer {
+  font-size: 12px;
+  color: #4a4a58;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── STATS STRIP ── */
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 64px 0;
+}
+
+.stat-item {
+  background: var(--bg-card);
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ── SIGNAL DEMO ── */
+.signal-demo {
+  background: #000;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 20px 24px;
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.signal-demo::before {
+  content: 'LIVE SIGNAL EXAMPLE';
+  position: absolute; top: 12px; right: 16px;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.signal-line { margin: 3px 0; }
+.signal-coin  { color: #fff; font-weight: 500; }
+.signal-long  { color: var(--accent); }
+.signal-short { color: var(--red); }
+.signal-dim   { color: var(--muted); }
+
+/* ── SECTION ── */
+section { padding: 80px 0; }
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin-bottom: 48px;
+  line-height: 1.1;
+}
+
+/* ── PHILOSOPHY ── */
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.philosophy-text p {
+  color: var(--muted);
+  margin-bottom: 20px;
+  line-height: 1.8;
+}
+
+.terminal-block {
+  background: #000;
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--accent2);
+  border-radius: 8px;
+  padding: 20px 24px;
+}
+
+.terminal-block .t-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  margin-bottom: 12px;
+}
+
+.terminal-block p {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--accent2);
+  line-height: 1.7;
+}
+
+/* ── VALIDATION ── */
+.factors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.factor-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.factor-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-3px);
+}
+
+.factor-icon {
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+
+.factor-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.factor-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.factor-card.last-row {
+  grid-column: span 1;
+}
+
+/* ── WINRATE SECTION ── */
+.winrate-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.winrate-numbers { }
+
+.winrate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.winrate-row:last-child { border-bottom: none; }
+
+.wr-period {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.wr-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.wr-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.winrate-text h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+.winrate-text p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.winrate-text .highlight {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ── PRICING ── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 36px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.pricing-card.pro {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0,255,135,0.03) 100%);
+}
+
+.pro-badge {
+  position: absolute;
+  top: -13px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #000;
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.plan-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.plan-price {
+  font-family: 'Syne', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.plan-period {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.plan-features {
+  list-style: none;
+  margin-bottom: 32px;
+}
+
+.plan-features li {
+  padding: 9px 0;
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.4;
+}
+
+.plan-features li:last-child { border-bottom: none; }
+
+.plan-features li.pro-item { color: var(--text); }
+.plan-features li.free-item { color: var(--muted); }
+.plan-features li.locked { color: #3a3a48; }
+
+.check { color: var(--accent); flex-shrink: 0; }
+.cross { color: var(--red); flex-shrink: 0; }
+
+.btn-plan {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  border-radius: 8px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-plan-free {
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+.btn-plan-free:hover { border-color: var(--muted); color: var(--text); }
+
+.btn-plan-pro {
+  background: var(--accent);
+  color: #000;
+  box-shadow: 0 0 24px var(--glow);
+}
+.btn-plan-pro:hover {
+  box-shadow: 0 0 40px rgba(0,255,135,0.3);
+  transform: translateY(-1px);
+}
+
+/* ── TRIAL BANNER ── */
+.trial-banner {
+  background: linear-gradient(135deg, rgba(0,255,135,0.08) 0%, rgba(0,196,255,0.06) 100%);
+  border: 1px solid rgba(0,255,135,0.2);
+  border-radius: 12px;
+  padding: 32px 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.trial-text h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.trial-text p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ── REFERRAL ── */
+.referral-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+}
+
+.referral-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.referral-header div p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+
+.referral-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.ref-col {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+}
+
+.ref-icon { font-size: 2rem; margin-bottom: 12px; }
+
+.ref-amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.ref-desc { font-size: 13px; color: var(--muted); }
+
+.ref-how {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ── HOW TO USE ── */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.step {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px;
+  position: relative;
+}
+
+.step-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--border2);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.step h3 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.step p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 40px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+}
+.footer-logo span { color: var(--accent); }
+
+.footer-risk {
+  font-size: 12px;
+  color: #3a3a48;
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+.footer-copy {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #3a3a48;
+  white-space: nowrap;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .philosophy-grid,
+  .factors-grid,
+  .winrate-block,
+  .pricing-grid,
+  .referral-cols,
+  .steps,
+  .stats-strip { grid-template-columns: 1fr; }
+
+  .stats-strip { background: transparent; gap: 8px; }
+  .stat-item { border-radius: 10px; border: 1px solid var(--border); }
+
+  .hero { padding: 70px 0 60px; }
+
+  .referral-header { flex-direction: column; }
+
+  footer { flex-direction: column; text-align: center; }
+
+  .trial-banner { flex-direction: column; text-align: center; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero > * { animation: fadeUp 0.6s ease both; }
+.hero .hero-badge     { animation-delay: 0.1s; }
+.hero h1              { animation-delay: 0.2s; }
+.hero .hero-sub       { animation-delay: 0.3s; }
+.hero .cta-row        { animation-delay: 0.4s; }
+.hero .disclaimer     { animation-delay: 0.5s; }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="logo">PolyAlgo<span>.</span></div>
-            <a href="https://t.me/ТВОЙ_БОТ" target="_blank" class="btn btn-secondary">Открыть PolyAlgo Bot</a>
-        </header>
+<div class="container">
 
-        <section class="hero">
-            <h1>Оцифровываем намерения рынка.</h1>
-            <p>Аналитический алгоритм, объединяющий ставки толпы на Polymarket с реальным потоком ордеров (CVD & OI) на Binance Futures. Мы не предсказываем будущее. Мы показываем, куда вливаются умные деньги.</p>
-            <div class="cta-group">
-                <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn btn-primary">🤖 Запустить бота (Free)</a>
-            </div>
-            <p class="disclaimer-micro">⚠️ Математический контекст, а не финансовая рекомендация.</p>
-        </section>
+  <!-- HEADER -->
+  <header>
+    <div class="logo syne">PolyAlgo<span>.</span></div>
+    <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="header-btn">
+      Открыть бота →
+    </a>
+  </header>
 
-        <section>
-            <h2 class="section-title">Сигнал — это повод открыть график, а не сделка.</h2>
-            <div class="grid" style="grid-template-columns: 1fr;">
-                <div class="card">
-                    <p>Рынок переполнен каналами, которые рисуют стрелочки и обещают 100% винрейт. Мы в это не верим. PolyAlgo создавался как внутренний Research Node для фильтрации рыночного шума на 15-минутных таймфреймах.</p>
-                    <div class="terminal mono">
-                        <p>> Внимание. На Polymarket толпа ставит на падение, но алгоритм фиксирует аномальный приток агрессивных рыночных покупок (CVD) на Binance, подкрепленный ростом Открытого Интереса (OI). Вероятен сквиз (Exodus).</p>
-                    </div>
-                    <p style="margin-top: 24px;">Решение о входе в сделку и риск-менеджмент остаются за вами. Мы даем контекст.</p>
-                </div>
-            </div>
-        </section>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
 
-        <section>
-            <h2 class="section-title">5-Факторная валидация</h2>
-            <div class="validation-flex">
-                <div class="card">
-                    <div class="card-icon">⚡️</div>
-                    <h3>Polymarket Anomaly</h3>
-                    <p>Поиск расхождений между вероятностями на Polymarket и реальным графиком.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">📊</div>
-                    <h3>CVD (Volume Delta)</h3>
-                    <p>Анализ последних 500 сделок на Binance. Отделяем пассивные лимиты от агрессивных ударов по стакану.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">🔥</div>
-                    <h3>Open Interest</h3>
-                    <p>Отличаем истинное движение (заход новых денег) от фейкового сквиза (закрытие позиций толпы).</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">📏</div>
-                    <h3>ATR Filter</h3>
-                    <p>Защита от боковика. Игнорируем шум, если цена не вышла за пределы среднего истинного диапазона.</p>
-                </div>
-                <div class="card">
-                    <div class="card-icon">⚖️</div>
-                    <h3>Dynamic Score</h3>
-                    <p>Каждое событие получает оценку силы паттерна (Strength Score от 50 до 99%).</p>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2 class="section-title">Прозрачная статистика</h2>
-            <div class="grid" style="grid-template-columns: 1fr;">
-                <div class="card" style="text-align: center;">
-                    <p style="font-size: 1.1rem; margin-bottom: 24px;">Мы не скрываем минусы. База данных сделок открыта прямо в Telegram-боте.</p>
-                    <p><strong>Global Winrate:</strong> Общая успешность за 24 часа, 7 дней и всё время.<br>
-                    <strong>History:</strong> Журнал всех циклов с указанием изначального Score и исхода.</p>
-                    <p style="margin-top: 24px; color: var(--accent);">Честные 70-75% винрейта на дистанции вызывают больше уважения, чем нарисованные 99%.</p>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2 class="section-title">Тарифы</h2>
-            <div class="grid">
-                <div class="pricing-card">
-                    <h3>Free</h3>
-                    <div class="price mono">0 <span style="font-size: 1.2rem; color: var(--text-muted);">USDT</span></div>
-                    <ul>
-                        <li>✔️ Доступ к глобальной статистике бота</li>
-                        <li>✔️ Уведомления о появлении аномалий</li>
-                        <li>✔️ Участие в партнерской программе</li>
-                        <li style="color: #ef4444;">❌ Скрыты точная точка входа и направление</li>
-                    </ul>
-                    <a href="https://t.me/polymarket3333bot?start=ref_930769410" class="btn btn-secondary" style="width: 100%;">Начать бесплатно</a>
-                </div>
-                <div class="pricing-card pro">
-                    <h3>PRO Интрадей</h3>
-                    <div class="price mono">50 <span style="font-size: 1.2rem; color: var(--text-muted);">USDT/мес</span></div>
-                    <ul>
-                        <li>💎 Мгновенные сигналы с направлением (LONG/SHORT)</li>
-                        <li>💎 Данные по CVD и Открытому Интересу в Real-Time</li>
-                        <li>💎 Прямые ссылки для входа в 1 клик</li>
-                        <li>💎 Кастомизация: выбор монет для мониторинга</li>
-                    </ul>
-                    <a href="https://t.me/polymarket3333bot?start=ref_930769410" class="btn btn-primary" style="width: 100%;">Получить доступ</a>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <div class="card" style="text-align: center; border-color: var(--accent);">
-                <h2 style="margin-bottom: 16px;">Партнерская программа (RevShare)</h2>
-                <p style="margin-bottom: 24px;">У нас нет отдела продаж, мы растем за счет комьюнити. Скопируйте ссылку в боте и приглашайте друзей.</p>
-                <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
-                    <div>
-                        <div style="font-size: 2rem; margin-bottom: 8px;">💸</div>
-                        <strong>Вам: 20% (10 USDT)</strong><br><span style="color: var(--text-muted); font-size: 0.9rem;">с каждой оплаты реферала</span>
-                    </div>
-                    <div>
-                        <div style="font-size: 2rem; margin-bottom: 8px;">🎁</div>
-                        <strong>Другу: +7 дней PRO</strong><br><span style="color: var(--text-muted); font-size: 0.9rem;">бесплатно при покупке</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <footer>
-            <p><strong>Risk Warning:</strong> Торговля криптовалютами и деривативами сопряжена с высоким уровнем риска. Алгоритмические расчеты базируются на исторических данных и не гарантируют будущей прибыли. Проект PolyAlgo не несет ответственности за ваши торговые решения. Используйте строгий риск-менеджмент.</p>
-            <p style="margin-top: 16px;">&copy; 2026 PolyAlgo. Все права защищены.</p>
-        </footer>
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      LIVE · 421 сигнал · 72.9% WIN
     </div>
 
+    <h1 class="syne">
+      Толпа ошибается.<br>
+      <em>Алгоритм это видит.</em>
+    </h1>
+
+    <p class="hero-sub">
+      Находим расхождения между ставками толпы на Polymarket
+      и реальным потоком ордеров на Binance Futures.
+      CVD + Open Interest + ATR — не стрелочки, а математика.
+    </p>
+
+    <div class="cta-row">
+      <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn-main">
+        🤖 Запустить бота — 3 дня PRO бесплатно
+      </a>
+      <a href="#how" class="btn-ghost">Как это работает ↓</a>
+    </div>
+
+    <p class="disclaimer">⚠ Математический контекст, не финансовая рекомендация.</p>
+  </section>
+
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="stat-item">
+      <div class="stat-num syne">72.9%</div>
+      <div class="stat-label">Глобальный<br>винрейт всё время</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num syne">421</div>
+      <div class="stat-label">Сигналов<br>в базе данных</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num syne">4</div>
+      <div class="stat-label">Монеты<br>BTC · ETH · SOL · XRP</div>
+    </div>
+  </div>
+
+  <!-- SIGNAL EXAMPLE -->
+  <div class="signal-demo mono">
+    <div class="signal-line"><span class="signal-dim">// Пример реального сигнала из бота:</span></div>
+    <div class="signal-line" style="margin-top: 10px;">
+      <span class="signal-long">🟢 BTCUSDT LONG</span> <span class="signal-dim">· 15m</span>
+    </div>
+    <div class="signal-line"><span class="signal-dim">💰 Price:</span> <span class="signal-coin">$83,241.50</span></div>
+    <div class="signal-line"><span class="signal-dim">🎯 Score:</span> <span style="color: #fff;">6.5/8.5</span></div>
+    <div class="signal-line"><span class="signal-dim">⏱ Round:</span> <span style="color: var(--muted);">BTC up or down · 14:15–14:30 ET</span></div>
+    <div class="signal-line" style="margin-top: 10px;"><span class="signal-dim">// 15 минут спустя →</span> <span class="signal-long">✅ WIN +0.38%</span></div>
+  </div>
+
+  <!-- PHILOSOPHY -->
+  <section id="how">
+    <div class="section-label">Философия</div>
+    <div class="section-title syne">Сигнал — это повод<br>открыть график.</div>
+
+    <div class="philosophy-grid">
+      <div class="philosophy-text">
+        <p>
+          Рынок переполнен каналами, которые рисуют стрелочки
+          и обещают 100% винрейт. Мы в это не верим.
+        </p>
+        <p>
+          PolyAlgo — это внутренний Research Node для фильтрации
+          рыночного шума на 15-минутных таймфреймах Polymarket.
+          Алгоритм не предсказывает будущее — он показывает,
+          куда вливаются умные деньги <em>прямо сейчас</em>.
+        </p>
+        <p>
+          Решение о входе в сделку и риск-менеджмент
+          остаются за вами. Мы даём контекст.
+        </p>
+      </div>
+      <div class="terminal-block">
+        <div class="t-label">SIGNAL CONTEXT</div>
+        <p>
+          На Polymarket 78% пула ставит на падение BTC.<br>
+          CVD на Binance Futures: +$2.1M (агрессивные покупки).<br>
+          OI ↑ +0.3% — заход новых лонгов.<br>
+          Вероятен шорт-сквиз (Exodus).<br><br>
+          Score: 7.0/8.5 · Направление: LONG
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5-FACTOR VALIDATION -->
+  <section>
+    <div class="section-label">Алгоритм</div>
+    <div class="section-title syne">5-факторная<br>валидация</div>
+
+    <div class="factors-grid">
+      <div class="factor-card">
+        <div class="factor-icon">⚡️</div>
+        <h3>Polymarket Anomaly</h3>
+        <p>Поиск резких перекосов вероятностей на Polymarket. Когда 75%+ пула ставит на одну сторону — это аномалия.</p>
+      </div>
+      <div class="factor-card">
+        <div class="factor-icon">📊</div>
+        <h3>CVD (Volume Delta)</h3>
+        <p>Анализ последних 500 сделок на Binance Futures. Отделяем пассивные лимиты от агрессивных ударов по стакану.</p>
+      </div>
+      <div class="factor-card">
+        <div class="factor-icon">🔥</div>
+        <h3>Open Interest</h3>
+        <p>Отличаем истинное движение (заход новых денег) от фейкового сквиза (закрытие позиций толпы).</p>
+      </div>
+      <div class="factor-card last-row">
+        <div class="factor-icon">📏</div>
+        <h3>ATR Filter</h3>
+        <p>Защита от боковика. Игнорируем шум, если цена не вышла за пределы среднего истинного диапазона.</p>
+      </div>
+      <div class="factor-card last-row">
+        <div class="factor-icon">⚖️</div>
+        <h3>Dynamic Score</h3>
+        <p>Каждое событие получает взвешенный Score от 0 до 8.5. Сигналы ниже порога отфильтровываются автоматически.</p>
+      </div>
+      <div class="factor-card last-row" style="border-color: rgba(0,196,255,0.2); background: rgba(0,196,255,0.03);">
+        <div class="factor-icon">🧲</div>
+        <h3>Exodus Detector</h3>
+        <p>Супер-фактор: детектор ловушек. Фиксирует паттерн когда CVD противоречит движению цены — шорт-сквизы и лонг-сквизы.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WINRATE -->
+  <section>
+    <div class="section-label">Статистика</div>
+    <div class="section-title syne">Прозрачная<br>статистика</div>
+
+    <div class="winrate-block">
+      <div class="winrate-numbers">
+        <div class="winrate-row">
+          <span class="wr-period">24 часа</span>
+          <div style="text-align: right;">
+            <div class="wr-value">73.9%</div>
+            <div class="wr-count">212/287 сигналов</div>
+          </div>
+        </div>
+        <div class="winrate-row">
+          <span class="wr-period">7 дней</span>
+          <div style="text-align: right;">
+            <div class="wr-value">72.9%</div>
+            <div class="wr-count">307/421 сигналов</div>
+          </div>
+        </div>
+        <div class="winrate-row">
+          <span class="wr-period">Всё время</span>
+          <div style="text-align: right;">
+            <div class="wr-value">72.9%</div>
+            <div class="wr-count">307/421 сигналов</div>
+          </div>
+        </div>
+      </div>
+      <div class="winrate-text">
+        <h3>Мы не скрываем минусы.</h3>
+        <p>
+          База данных всех сделок открыта прямо в Telegram-боте.
+          Каждый сигнал записывается с исходным Score и итогом — WIN или LOSS.
+        </p>
+        <p>
+          <span class="highlight">Честные 72-73% на дистанции</span> вызывают
+          больше уважения, чем нарисованные 99%.
+        </p>
+        <p style="font-size: 12px; color: var(--muted);">
+          Статистика обновляется в реальном времени в боте.
+          Данные за 01.04.2026.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW TO USE -->
+  <section id="start">
+    <div class="section-label">Как начать</div>
+    <div class="section-title syne">Три шага<br>до первого сигнала</div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num syne">01</div>
+        <h3>Запустите бота</h3>
+        <p>Нажмите кнопку ниже — бот откроется в Telegram. Активируется 3 дня PRO-доступа без карты.</p>
+      </div>
+      <div class="step">
+        <div class="step-num syne">02</div>
+        <h3>Дождитесь сигнала</h3>
+        <p>Алгоритм мониторит рынок 24/7. Как только паттерн подтвердится — уведомление придёт автоматически.</p>
+      </div>
+      <div class="step">
+        <div class="step-num syne">03</div>
+        <h3>Откройте сделку</h3>
+        <p>Нажмите «Открыть сделку» — PRO-ссылка перенесёт вас прямо на нужный пул Polymarket в один клик.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section>
+    <div class="section-label">Тарифы</div>
+    <div class="section-title syne">Начните бесплатно</div>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">FREE</div>
+        <div class="plan-price syne">0</div>
+        <div class="plan-period mono">USDT / навсегда</div>
+        <ul class="plan-features">
+          <li class="free-item"><span class="check">✓</span> Глобальная статистика и винрейт</li>
+          <li class="free-item"><span class="check">✓</span> Уведомления о появлении аномалий</li>
+          <li class="free-item"><span class="check">✓</span> Участие в партнёрской программе</li>
+          <li class="locked"><span class="cross">✗</span> Направление сделки скрыто (LONG/SHORT)</li>
+          <li class="locked"><span class="cross">✗</span> Прямые ссылки на вход в пул</li>
+        </ul>
+        <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn-plan btn-plan-free">
+          Начать бесплатно
+        </a>
+      </div>
+
+      <div class="pricing-card pro">
+        <div class="pro-badge">POPULAR</div>
+        <div class="plan-name">PRO ИНТРАДЕЙ</div>
+        <div class="plan-price syne">50</div>
+        <div class="plan-period mono">USDT / месяц</div>
+        <ul class="plan-features">
+          <li class="pro-item"><span class="check">✓</span> Мгновенные сигналы с направлением LONG/SHORT</li>
+          <li class="pro-item"><span class="check">✓</span> CVD и Open Interest в реальном времени</li>
+          <li class="pro-item"><span class="check">✓</span> Прямые ссылки на вход в 1 клик</li>
+          <li class="pro-item"><span class="check">✓</span> Выбор монет для мониторинга</li>
+          <li class="pro-item"><span class="check">✓</span> Оплата: USDT · Telegram Stars · карта РФ</li>
+        </ul>
+        <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn-plan btn-plan-pro">
+          Получить доступ
+        </a>
+      </div>
+    </div>
+
+    <div class="trial-banner">
+      <div class="trial-text">
+        <h3>🎁 3 дня PRO бесплатно</h3>
+        <p>Для новых пользователей — полный PRO-доступ без карты. Оцените систему в деле.</p>
+      </div>
+      <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn-main" style="white-space: nowrap;">
+        Активировать триал →
+      </a>
+    </div>
+  </section>
+
+  <!-- REFERRAL -->
+  <section>
+    <div class="referral-card">
+      <div class="referral-header">
+        <div>
+          <div class="section-label" style="margin-bottom: 8px;">Партнёрская программа</div>
+          <h2 class="syne" style="font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px;">RevShare 20%</h2>
+          <p>У нас нет отдела продаж — мы растём за счёт комьюнити.</p>
+        </div>
+        <a href="https://t.me/polymarket3333bot?start=ref_930769410" target="_blank" class="btn-main" style="white-space: nowrap;">
+          Получить ссылку
+        </a>
+      </div>
+
+      <div class="referral-cols">
+        <div class="ref-col">
+          <div class="ref-icon">💸</div>
+          <div class="ref-amount syne">20%</div>
+          <div class="ref-desc">Вам — пожизненно<br>с каждой оплаты реферала</div>
+        </div>
+        <div class="ref-col">
+          <div class="ref-icon">🎁</div>
+          <div class="ref-amount syne">+7 дней</div>
+          <div class="ref-desc">Вашему другу — PRO бесплатно<br>при первой покупке</div>
+        </div>
+      </div>
+
+      <div class="ref-how">
+        <span style="font-size: 20px;">💡</span>
+        <span>Скопируйте реферальную ссылку в боте → поделитесь с другом → получайте 20% с каждой их оплаты навсегда. Минимум для вывода: 10 USDT.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo syne">PolyAlgo<span>.</span></div>
+    <p class="footer-risk">
+      Risk Warning: Торговля криптовалютами и деривативами сопряжена с высоким уровнем риска.
+      Алгоритмические расчёты базируются на исторических данных и не гарантируют будущей прибыли.
+      PolyAlgo не несёт ответственности за торговые решения.
+    </p>
+    <span class="footer-copy mono">© 2026 PolyAlgo</span>
+  </footer>
+
+</div>
 </body>
 </html>
