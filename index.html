@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PolyAlgo Trader | Институциональный анализ Polymarket</title>
 <meta name="description" content="Алгоритм находит расхождения между ставками толпы на Polymarket и реальным потоком ордеров на Binance Futures. 72.9% винрейт. 3 дня PRO бесплатно.">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<!-- Bunny Fonts — работает без VPN в России и СНГ -->
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=syne:400,600,700,800|dm-mono:400,500|dm-sans:400,500&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:        #070709;
@@ -27,7 +29,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
@@ -47,8 +49,8 @@ body::before {
 .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 
 /* ── FONTS ── */
-.syne { font-family: 'Syne', sans-serif; }
-.mono { font-family: 'DM Mono', monospace; }
+.syne { font-family: 'Syne', 'Arial Black', 'Impact', sans-serif; }
+.mono { font-family: 'DM Mono', 'Courier New', monospace; }
 
 /* ── HEADER ── */
 header {
@@ -707,16 +709,23 @@ footer {
 
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.hero > * { animation: fadeUp 0.6s ease both; }
-.hero .hero-badge     { animation-delay: 0.1s; }
-.hero h1              { animation-delay: 0.2s; }
-.hero .hero-sub       { animation-delay: 0.3s; }
-.hero .cta-row        { animation-delay: 0.4s; }
-.hero .disclaimer     { animation-delay: 0.5s; }
+/* Анимация только если браузер её поддерживает и нет reduced-motion */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-badge  { animation: fadeUp 0.5s ease 0.05s both; }
+  .hero h1     { animation: fadeUp 0.5s ease 0.15s both; }
+  .hero-sub    { animation: fadeUp 0.5s ease 0.25s both; }
+  .cta-row     { animation: fadeUp 0.5s ease 0.32s both; }
+  .disclaimer  { animation: fadeUp 0.5s ease 0.38s both; }
+}
+
+/* Без анимации — всё видно сразу */
+@media (prefers-reduced-motion: reduce) {
+  .hero > * { opacity: 1 !important; transform: none !important; }
+}
 </style>
 </head>
 <body>
